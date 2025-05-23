@@ -1,9 +1,16 @@
 const Book = require('../models/book');
+const Review = require('../models/reviewModel');
+const User = require('../models/userModel');
+const APIFeature = require('../utils/apiFeature');
 
 
 exports.getAllBooks = async (req, res) => {
 	try {
-		const allBooks = await Book.find();
+		const feature = new APIFeature(Book.find(), req.query)
+			.limitingFields()
+			.pagination();
+
+		const allBooks = await feature.query;
 		res.status(200).json({
 			status: "success",
 			length: allBooks.length,
@@ -16,18 +23,32 @@ exports.getAllBooks = async (req, res) => {
 		console.log(`Error occured : ${err}`);
 		res.status(500).json({
 			status: "success",
-			message: "Error occured while accessing data !!"
-		})
+			message: err.message
+		});
 	}
 }
 
 exports.getBook = async (req, res) => {
 	try {
-		const book = await Book.findById(req.params.id);
+		const book = await Book.findById(req.params.id).populate('createdBy', 'name');
+
+		if (!book) {
+			res.status(404).json({
+				status: "error",
+				message: "Book not found"
+			});
+		}
+
+		const reviews = await Review.find({ book: req.params.id })
+			.populate('user', 'name')
+			.sort({ createdAt: -1 });
+
+
 		res.status(200).json({
 			status: "success",
 			data: {
-				book: book
+				book: book,
+				reviews
 			}
 		});
 	}
@@ -43,7 +64,7 @@ exports.getBook = async (req, res) => {
 
 exports.createBooks = async (req, res) => {
 	try {
-		const newBook = await Book.create(req.body);
+		const newBook = await Book.create({ ...req.body, createdBy: req.user.id });
 		res.status(201).json({
 			status: "success",
 			data: {
@@ -51,11 +72,11 @@ exports.createBooks = async (req, res) => {
 			}
 		});
 	}
-	catch (error) {
-		console.log(`Error occured : ${error}`);
+	catch (err) {
+		console.log(`Error occured : ${err}`);
 		res.status(400).json({
 			status: "error",
-			message: "Some error occured while uploading"
+			message: err.message
 		});
 	}
 }

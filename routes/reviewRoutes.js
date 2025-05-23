@@ -1,20 +1,18 @@
 const express = require('express');
-const bookContoller = require('../controllers/bookController');
 const fetchUser = require('../middleware/fetchUser');
 const reviewController = require('../controllers/reviewController');
 
 const router = express.Router();
 
 router
-	.route('/')
-	.get(bookContoller.getAllBooks)
-	.post(fetchUser, bookContoller.createBooks);
+	.route('/:id/review')
+	.post(fetchUser, reviewController.addReview);
+
 
 router
 	.route('/:id')
-	.get(bookContoller.getBook);
-
-
+	.put(fetchUser, reviewController.updateReview)
+	.delete(fetchUser, reviewController.deleteReview);
 
 
 module.exports = router;

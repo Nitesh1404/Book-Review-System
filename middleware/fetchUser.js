@@ -8,7 +8,7 @@ const fetchUser = async (req, res, next) => {
 	if (!token) {
 		return res.status(401).json({
 			status: 'error',
-			message: err.message
+			message: "token not found!"
 		});
 	}
 
@@ -19,7 +19,7 @@ const fetchUser = async (req, res, next) => {
 	} catch (err) {
 		res.status(401).json({
 			status: "error",
-			message: 'Invalid token'
+			message: err.message
 		});
 	}
 }

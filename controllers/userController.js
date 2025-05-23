@@ -42,8 +42,8 @@ exports.userLogin = async (req, res) => {
 
 		const token = createToken(user._id);
 		res.status(200).json({
-			status: "success".
-				token,
+			status: "success",
+			token,
 			user
 		});
 
