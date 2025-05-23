@@ -1,7 +1,7 @@
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 
-const secretKey = 'BookReviewSystem';
+const secretKey = process.env.SecretKey;
 
 const createToken = (userId) => {
 	return jwt.sign({ id: userId }, secretKey);

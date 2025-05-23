@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 
-const secretKey = 'BookReviewSystem';
+const secretKey = process.env.SecretKey;
 
 const fetchUser = async (req, res, next) => {
 	const token = req.headers.authorization?.split(' ')[1];

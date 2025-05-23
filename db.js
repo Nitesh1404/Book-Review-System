@@ -1,15 +1,23 @@
 const mongoose = require('mongoose');
+const dotenv = require('dotenv');
 
-const url = "mongodb://127.0.0.1:27017/book-review-system";
+dotenv.config();
 
-const connectToMongoDB = () => {
-	mongoose.connect(url);
-	if (mongoose.connection) {
-		console.log("Database connected successfully !!");
+const url = process.env.MONGODBURL;
+
+const connectToMongoDB = async () => {
+	if (!url) {
+		console.error("❌ MONGODB URI is not defined in .env");
+		process.exit(1);
 	}
-	else {
-		console.log("error in connecting database!!😒");
+
+	try {
+		await mongoose.connect(url);
+		console.log("✅ Database connected successfully!");
+	} catch (error) {
+		console.error("❌ Error connecting to the database:", error.message);
+		process.exit(1);
 	}
-}
+};
 
 module.exports = connectToMongoDB;
